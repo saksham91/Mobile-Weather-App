@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Basic Weather App</string>
+    <string name="main_text">Enter City Name or Zip Code</string>
+    <string name="city_name">City Name</string>
+    <string name="zip_code">Zip Code</string>
+    <string name="button_text">Get weather data</string>
 </resources>
