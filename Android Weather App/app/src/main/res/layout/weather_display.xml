@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/weather_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="#f2a618"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:padding="10dp"
+            tools:text="@string/city_name"/>
+
+        <TextView
+            android:id="@+id/more_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:gravity="center"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:padding="10dp"
+            android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
+            android:text="5 day Forecast"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#f2a618"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/max_temperature_label"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="Max Temp"/>
+
+        <TextView
+            android:id="@+id/max_temperature_value"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:layout_below="@id/max_temperature_label"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:gravity="center_horizontal"
+            tools:text="20"/>
+
+        <TextView
+            android:id="@+id/min_temp_label"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:layout_toEndOf="@id/max_temperature_label"
+            android:layout_marginStart="20dp"
+            android:text="Min Temp"/>
+
+        <TextView
+            android:id="@+id/min_temp_value"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:layout_below="@id/wind_text"
+            android:layout_toEndOf="@id/max_temperature_label"
+            android:layout_marginStart="20dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:gravity="center_horizontal"
+            tools:text="20"/>
+
+
+        <TextView
+            android:id="@+id/wind_text"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:layout_toEndOf="@id/min_temp_label"
+            android:layout_marginStart="20dp"
+            android:text="Wind"/>
+
+        <TextView
+            android:id="@+id/wind_value"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:layout_below="@id/wind_text"
+            android:layout_toEndOf="@id/min_temp_label"
+            android:layout_marginStart="20dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:gravity="center_horizontal"
+            tools:text="20"/>
+
+        <TextView
+            android:id="@+id/humidity_text"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:layout_toEndOf="@id/wind_text"
+            android:layout_marginStart="20dp"
+            android:text="Humidity"/>
+
+        <TextView
+            android:id="@+id/humidity_value"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:layout_below="@id/humidity_text"
+            android:layout_toEndOf="@id/wind_text"
+            android:layout_marginStart="20dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:gravity="center_horizontal"
+            tools:text="20"/>
+
+
+        <ImageView
+            android:id="@+id/weather_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

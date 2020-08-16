@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient_color"
     tools:context=".MainActivity">
 
     <TextView
@@ -14,6 +15,7 @@
         android:text="@string/main_text"
         android:layout_marginTop="20dp"
         android:textSize="22sp"
+        android:textColor="#FFF"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed-medium"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -28,6 +30,8 @@
         android:layout_marginTop="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topText"
+        android:textColor="#FFF"
+        android:textColorHint="#9ba3a8"
         android:hint="@string/city_name" />
 
     <EditText
@@ -38,6 +42,9 @@
         android:layout_marginTop="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cityNameText"
+        android:textColor="#FFF"
+        android:textColorHint="#9ba3a8"
+        android:inputType="number"
         android:hint="@string/zip_code" />
 
     <Button
@@ -66,6 +73,23 @@
         app:layout_constraintTop_toBottomOf="@id/submitButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        tools:text="Hello there... \nHey"/>
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/submitButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/submitButton"
+        layout="@layout/weather_display" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

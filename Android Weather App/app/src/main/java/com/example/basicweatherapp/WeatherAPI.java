@@ -2,10 +2,14 @@ package com.example.basicweatherapp;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
 import com.example.basicweatherapp.models.Main;
+import com.example.basicweatherapp.models.Weather;
+import com.example.basicweatherapp.models.Wind;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -24,10 +28,10 @@ public class WeatherAPI {
     private static WeatherAPI mWeatherAPI;
     private Gson mGson;
     private final String baseURL = "http://api.openweathermap.org/";
-    private final String appId = "APIKEY";
-    private final String zipCode = "02128";
+    private final String appId = "251a04e057780eda8e89a7d772557b8a";
+    private final String zipCode = "10001";
     private Retrofit mRetrofit;
-    private Map<String, Integer> values = new HashMap<>();
+    private Map<String, String> values = new HashMap<>();
 
     private WeatherAPI() {
         mGson = new Gson();
@@ -40,10 +44,10 @@ public class WeatherAPI {
         return mWeatherAPI;
     }
 
-    public Map<String, Integer> getWeatherData(final Context context) {
+    public Map<String, String> getWeatherData(final Context context, String zip) {
         if (mRetrofit == null) { initRetrofit(); }
         WeatherService weatherService = mRetrofit.create(WeatherService.class);
-        Call<WeatherData> call = weatherService.getWeatherDataByZipCode(zipCode, appId);
+        Call<WeatherData> call = weatherService.getWeatherDataByZipCode(zip, appId);
         call.enqueue(new Callback<WeatherData>() {
 
             @Override
@@ -70,11 +74,21 @@ public class WeatherAPI {
                     .build();
         }
 
-    private Map<String, Integer> handleCurrentWeatherData(@NonNull WeatherData weatherData) {
+    private Map<String, String> handleCurrentWeatherData(@NonNull WeatherData weatherData) {
+        String icon = null;
         Main tempData = weatherData.main;
-        values.put("currentTemp", convertToTempScale(tempData.temp));
-        values.put("minTemp", convertToTempScale(tempData.temp_min));
-        values.put("maxTemp", convertToTempScale(tempData.temp_max));
+        Wind windData = weatherData.wind;
+        ArrayList<Weather> weathers = weatherData.weather;
+        if (!weathers.isEmpty()) {
+            icon = weathers.get(0).icon;
+        }
+        values.put("cityName", weatherData.name);
+        values.put("currentTemp", String.valueOf(convertToTempScale(tempData.temp)));
+        values.put("minTemp", String.valueOf(convertToTempScale(tempData.temp_min)));
+        values.put("maxTemp", String.valueOf(convertToTempScale(tempData.temp_max)));
+        values.put("humidity", tempData.humidity);
+        values.put("windSpeed", windData.speed);
+        values.put("icon", icon);
         return values;
     }
 
