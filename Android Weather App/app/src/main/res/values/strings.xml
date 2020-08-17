@@ -4,4 +4,8 @@
     <string name="city_name">City Name</string>
     <string name="zip_code">Zip Code</string>
     <string name="button_text">Get weather data</string>
+    <string name="unit_metric">Metric</string>
+    <string name="unit_imperial">Imperial</string>
+    <string name="temp_in_celsius">%s\u2103</string>
+    <string name="temp_in_fahrenheit">%s\u2109</string>
 </resources>
