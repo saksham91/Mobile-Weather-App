@@ -1,6 +1,8 @@
 package com.example.basicweatherapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -12,72 +14,62 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.squareup.picasso.Picasso;
 
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements WeatherResponseListener {
+public class MainActivity extends AppCompatActivity {
 
-    private EditText name;
-    private EditText zipcode;
-    private Button buttonSubmit;
-    private TextView dataTV;
-    private WeatherAPI weatherAPI;
-    private ProgressBar progressBar;
-    private LinearLayout weatherView;
-    private boolean isMetric = true;
-    private Map<String, String> data;
-    private TextView cityName;
-    private TextView maxTemp;
-    private TextView minTemp;
-    private TextView humidity;
-    private TextView windSpeed;
+    public static boolean isMetric = true;
     private Switch switchUnit;
-    private static final Double kphToMph = 0.621371;
+    public static final Double kphToMph = 0.621371;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupViews();
-        weatherAPI = WeatherAPI.getInstance();
-        weatherAPI.subscribeToWeatherResponseData(this);
     }
 
     private void setupViews() {
-        cityName = findViewById(R.id.city_name);
-        maxTemp = findViewById(R.id.max_temperature_value);
-        minTemp = findViewById(R.id.min_temp_value);
-        humidity = findViewById(R.id.humidity_value);
-        windSpeed = findViewById(R.id.wind_value);
-        dataTV = findViewById(R.id.weatherData);
-        progressBar = findViewById(R.id.progress_bar);
-        zipcode = findViewById(R.id.zipCodeText);
-        weatherView = findViewById(R.id.weather_view);
-        weatherView.setVisibility(View.GONE);
+        TabLayout tabLayout = findViewById(R.id.tab_bar);
+        TabItem homeTab = findViewById(R.id.tab_home);
+        TabItem detailsTab = findViewById(R.id.tab_detail);
+        TabItem settingsTab = findViewById(R.id.tab_settings);
+        ViewPager2 viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(new PagerAdapter(this));
+        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                switch (position) {
+                    case 0:
+                        //tab.setText("Home");
+                        tab.setIcon(R.drawable.ic_baseline_home_24);
+                        break;
+                    case 1:
+                        //tab.setText("Details");
+                        tab.setIcon(R.drawable.ic_baseline_sunny_24);
+                        break;
+                    case 2:
+                        //tab.setText("Settings");
+                        tab.setIcon(R.drawable.ic_baseline_settings_24);
+                        break;
+                }
+            }
+        });
+        tabLayoutMediator.attach();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        buttonSubmit = findViewById(R.id.submitButton);
-        buttonSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validateZipCode()) {
-                    data = weatherAPI.getWeatherData(getApplicationContext(), zipcode.getText().toString());
-                } else {
-                    displayError();
-                    weatherView.setVisibility(View.GONE);
-                    return;
-                }
-            }
-        });
     }
 
     @Override
@@ -92,65 +84,8 @@ public class MainActivity extends AppCompatActivity implements WeatherResponseLi
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 isMetric = isChecked;
                 switchUnit.setText(isMetric ? R.string.unit_metric : R.string.unit_imperial);
-                if (data != null) {
-                    configureViews();
-                }
             }
         });
         return true;
-    }
-
-    private boolean validateZipCode() {
-        return zipcode.getText().toString().length() == 5;
-    }
-
-    private void displayError() {
-        Toast.makeText(this, "Invalid ZipCode", Toast.LENGTH_LONG).show();
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void configureViews() {
-        if (data != null && !data.isEmpty()) {
-            dataTV.setVisibility(View.GONE);
-        } else {
-            String s = "Failed to fetch data...";
-            dataTV.setVisibility(View.VISIBLE);
-            dataTV.setText(s);
-            return;
-        }
-
-        String icon = data.get("icon");
-        weatherView.setVisibility(View.VISIBLE);
-        cityName.setText(data.get("cityName"));
-        humidity.setText(data.get("humidity") + " %");
-        if (isMetric) {
-            maxTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("maxTemp")));
-            minTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("minTemp")));
-            windSpeed.setText(data.get("windSpeed") + " kph");
-        } else {
-            maxTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(convertToImperial(data.get("maxTemp"), true))));
-            minTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(convertToImperial(data.get("minTemp"), true))));
-            windSpeed.setText(convertToImperial(data.get("windSpeed"), false) + " mph");
-        }
-        getImageView(icon);
-    }
-
-    private int convertToImperial(String metricValue, boolean isTemp) {
-        if (!isTemp) {
-            return (int) Math.round(Double.parseDouble(metricValue) * kphToMph);
-        }
-        double temperatureInCelsius = Double.parseDouble(metricValue);
-        return (int) Math.round(temperatureInCelsius * 1.8 + 32);
-    }
-
-    private void getImageView(String icon) {
-        ImageView imageView = findViewById(R.id.weather_logo);
-        String url = "https://openweathermap.org/img/wn/" + icon + "@2x.png";
-        Picasso.get().load(url).into(imageView);
-    }
-
-    @Override
-    public void onResponseSuccess() {
-        configureViews();
     }
 }
