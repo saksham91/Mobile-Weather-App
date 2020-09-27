@@ -27,14 +27,16 @@ public class WeatherAPI {
     private static final String TAG = "API";
     private static WeatherAPI mWeatherAPI;
     private Gson mGson;
-    private final String baseURL = "http://api.openweathermap.org/";
-    private final String appId = "APIKEY";
+    private final String baseURL = "https://api.openweathermap.org/";
+    private final String appId = "8e845eb9a26e423f0d730d3c4759a46d";
     private final String zipCode = "10001";
     private Retrofit mRetrofit;
+    private WeatherResponseListener mListener;
     private Map<String, String> values = new HashMap<>();
 
     private WeatherAPI() {
         mGson = new Gson();
+        mListener = null;
     }
 
     public static WeatherAPI getInstance() {
@@ -56,6 +58,7 @@ public class WeatherAPI {
                     WeatherData weatherData = response.body();
                     assert weatherData != null;
                     handleCurrentWeatherData(weatherData);
+                    notifySubscriber();
                 }
             }
 
@@ -93,7 +96,17 @@ public class WeatherAPI {
     }
 
     private int convertToTempScale(String temp) {
-        return (int) Math.round(Double.valueOf(temp) - 273.15);
+        return (int) Math.round(Double.parseDouble(temp) - 273.15);
+    }
+
+    public void subscribeToWeatherResponseData(WeatherResponseListener listener) {
+        mListener = listener;
+    }
+
+    private void notifySubscriber() {
+        if (mListener == null) return;
+
+        mListener.onResponseSuccess();
     }
 
     private void handleWeatherData(ArrayList<ForecastData> dataList) {

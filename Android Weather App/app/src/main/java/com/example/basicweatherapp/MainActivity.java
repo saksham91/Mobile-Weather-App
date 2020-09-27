@@ -20,7 +20,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements WeatherResponseListener {
 
     private EditText name;
     private EditText zipcode;
@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setupViews();
         weatherAPI = WeatherAPI.getInstance();
+        weatherAPI.subscribeToWeatherResponseData(this);
     }
 
     private void setupViews() {
@@ -73,14 +74,6 @@ public class MainActivity extends AppCompatActivity {
                     displayError();
                     weatherView.setVisibility(View.GONE);
                     return;
-                }
-                if (data != null && !data.isEmpty()) {
-                    dataTV.setVisibility(View.GONE);
-                    configureViews();
-                } else {
-                    String s = "Failed to fetch data...";
-                    dataTV.setVisibility(View.VISIBLE);
-                    dataTV.setText(s);
                 }
             }
         });
@@ -111,22 +104,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayError() {
-        Toast.makeText(this, "Invalid ZipCode..", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Invalid ZipCode", Toast.LENGTH_LONG).show();
     }
 
     private void configureViews() {
+        if (data != null && !data.isEmpty()) {
+            dataTV.setVisibility(View.GONE);
+        } else {
+            String s = "Failed to fetch data...";
+            dataTV.setVisibility(View.VISIBLE);
+            dataTV.setText(s);
+            return;
+        }
+
         String icon = data.get("icon");
         weatherView.setVisibility(View.VISIBLE);
         cityName.setText(data.get("cityName"));
-        humidity.setText(data.get("humidity"));
+        humidity.setText(data.get("humidity") + " %");
         if (isMetric) {
             maxTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("maxTemp")));
             minTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("minTemp")));
-            windSpeed.setText(data.get("windSpeed") + "kph");
+            windSpeed.setText(data.get("windSpeed") + " kph");
         } else {
             maxTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(convertToImperial(data.get("maxTemp"), true))));
             minTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(convertToImperial(data.get("minTemp"), true))));
-            windSpeed.setText(convertToImperial(data.get("windSpeed"), false) + "mph");
+            windSpeed.setText(convertToImperial(data.get("windSpeed"), false) + " mph");
         }
         getImageView(icon);
     }
@@ -141,7 +143,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void getImageView(String icon) {
         ImageView imageView = findViewById(R.id.weather_logo);
-        String url = "http://openweathermap.org/img/wn/" + icon + "@2x.png";
+        String url = "https://openweathermap.org/img/wn/" + icon + "@2x.png";
         Picasso.get().load(url).into(imageView);
+    }
+
+    @Override
+    public void onResponseSuccess() {
+        configureViews();
     }
 }
