@@ -2,6 +2,7 @@ package com.example.basicweatherapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements WeatherResponseLi
         Toast.makeText(this, "Invalid ZipCode", Toast.LENGTH_LONG).show();
     }
 
+    @SuppressLint("SetTextI18n")
     private void configureViews() {
         if (data != null && !data.isEmpty()) {
             dataTV.setVisibility(View.GONE);
