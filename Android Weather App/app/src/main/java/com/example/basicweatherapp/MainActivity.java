@@ -137,9 +137,9 @@ public class MainActivity extends AppCompatActivity implements WeatherResponseLi
 
     private int convertToImperial(String metricValue, boolean isTemp) {
         if (!isTemp) {
-            return (int) Math.round(Double.valueOf(metricValue) * kphToMph);
+            return (int) Math.round(Double.parseDouble(metricValue) * kphToMph);
         }
-        Double temperatureInCelsius = Double.valueOf(metricValue);
+        double temperatureInCelsius = Double.parseDouble(metricValue);
         return (int) Math.round(temperatureInCelsius * 1.8 + 32);
     }
 
