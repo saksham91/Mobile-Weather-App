@@ -45,20 +45,18 @@ public class MainActivity extends AppCompatActivity {
         TabItem settingsTab = findViewById(R.id.tab_settings);
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(new PagerAdapter(this));
+
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 switch (position) {
                     case 0:
-                        //tab.setText("Home");
                         tab.setIcon(R.drawable.ic_baseline_home_24);
                         break;
                     case 1:
-                        //tab.setText("Details");
-                        tab.setIcon(R.drawable.ic_baseline_sunny_24);
+                        tab.setIcon(R.drawable.ic_calendar_24);
                         break;
                     case 2:
-                        //tab.setText("Settings");
                         tab.setIcon(R.drawable.ic_baseline_settings_24);
                         break;
                 }

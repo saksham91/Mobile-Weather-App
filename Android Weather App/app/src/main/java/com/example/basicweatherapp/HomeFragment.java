@@ -11,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,14 +26,10 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Map;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
 import static com.example.basicweatherapp.MainActivity.isMetric;
 import static com.example.basicweatherapp.MainActivity.kphToMph;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class HomeFragment extends Fragment implements WeatherResponseListener {
 
     private EditText name;
@@ -47,7 +44,6 @@ public class HomeFragment extends Fragment implements WeatherResponseListener {
     private TextView minTemp;
     private TextView humidity;
     private TextView windSpeed;
-    private Switch switchUnit;
     private View mFragmentView;
 
     public HomeFragment() {
@@ -94,6 +90,8 @@ public class HomeFragment extends Fragment implements WeatherResponseListener {
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
                 if (validateZipCode()) {
                     data = weatherAPI.getWeatherData(getContext(), zipcode.getText().toString());
                 } else {
