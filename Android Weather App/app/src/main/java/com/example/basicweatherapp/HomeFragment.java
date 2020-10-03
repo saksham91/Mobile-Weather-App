@@ -1,6 +1,8 @@
 package com.example.basicweatherapp;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,7 +32,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 import static com.example.basicweatherapp.MainActivity.isMetric;
 import static com.example.basicweatherapp.MainActivity.kphToMph;
 
-public class HomeFragment extends Fragment implements WeatherResponseListener {
+public class HomeFragment extends Fragment implements WeatherResponseListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private EditText name;
     private EditText zipcode;
@@ -45,6 +47,7 @@ public class HomeFragment extends Fragment implements WeatherResponseListener {
     private TextView humidity;
     private TextView windSpeed;
     private View mFragmentView;
+    private SharedPreferences mSharedPrefs;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -60,6 +63,8 @@ public class HomeFragment extends Fragment implements WeatherResponseListener {
         super.onCreate(savedInstanceState);
         weatherAPI = WeatherAPI.getInstance();
         weatherAPI.subscribeToWeatherResponseData(this);
+        mSharedPrefs = getActivity().getSharedPreferences(SettingsFragment.PREFERENCE_FILE, Context.MODE_PRIVATE);
+        mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -156,5 +161,15 @@ public class HomeFragment extends Fragment implements WeatherResponseListener {
     @Override
     public void onResponseSuccess() {
         configureViews();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (s.equals(getString(R.string.unit_preference_key))) {
+            isMetric = sharedPreferences.getBoolean(s, false);
+            configureViews();
+        } else if (s.equals(getString(R.string.time_preference_key))) {
+
+        }
     }
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#242424"
+    android:background="@color/bg_color"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".SettingsFragment">
 
@@ -61,7 +61,7 @@
             android:layout_alignParentStart="true"/>
 
         <RadioGroup
-            android:id="@+id/toggle_switch"
+            android:id="@+id/toggle_switch_units"
             android:checkedButton="@id/metric"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
             android:layout_alignParentStart="true"/>
 
         <RadioGroup
-            android:id="@+id/toggle_switch_2"
+            android:id="@+id/toggle_switch_time"
             android:checkedButton="@id/twelve_hour"
             android:layout_width="150dp"
             android:layout_height="wrap_content"

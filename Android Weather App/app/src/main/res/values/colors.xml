@@ -8,4 +8,5 @@
     <color name="lighterBlue">#ffcdd8ec</color>
     <color name="white">#ffffffff</color>
     <color name="controlBackground">@color/white</color>
+    <color name="bg_color">#242424</color>
 </resources>

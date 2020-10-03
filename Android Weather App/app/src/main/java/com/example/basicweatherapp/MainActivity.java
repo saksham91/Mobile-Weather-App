@@ -28,7 +28,6 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public static boolean isMetric = true;
-    private Switch switchUnit;
     public static final Double kphToMph = 0.621371;
 
     @Override
@@ -70,20 +69,4 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        MenuItem item = menu.findItem(R.id.myswitch);
-        item.setActionView(R.layout.toolbar_switch);
-
-        switchUnit = item.getActionView().findViewById(R.id.unit_switch);
-        switchUnit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                isMetric = isChecked;
-                switchUnit.setText(isMetric ? R.string.unit_metric : R.string.unit_imperial);
-            }
-        });
-        return true;
-    }
 }

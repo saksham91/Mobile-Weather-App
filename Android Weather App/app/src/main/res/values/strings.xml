@@ -8,4 +8,8 @@
     <string name="unit_imperial">Imperial</string>
     <string name="temp_in_celsius">%s\u2103</string>
     <string name="temp_in_fahrenheit">%s\u2109</string>
+
+    <!-- Shared Preference keys -->
+    <string name="unit_preference_key">is_metric</string>
+    <string name="time_preference_key">prefer_twelve_hour</string>
 </resources>

@@ -28,7 +28,7 @@ public class WeatherAPI {
     private static WeatherAPI mWeatherAPI;
     private Gson mGson;
     private final String baseURL = "https://api.openweathermap.org/";
-    private final String appId = "API";
+    private final String appId = "8e845eb9a26e423f0d730d3c4759a46d";
     private final String zipCode = "10001";
     private Retrofit mRetrofit;
     private WeatherResponseListener mListener;

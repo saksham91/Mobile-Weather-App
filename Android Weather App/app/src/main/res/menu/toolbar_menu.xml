@@ -4,6 +4,7 @@
         android:id="@+id/myswitch"
         android:title="@string/unit_metric"
         app:showAsAction="always"
+        android:visible="false"
         android:actionLayout="@layout/toolbar_switch"
         />
 </menu>
