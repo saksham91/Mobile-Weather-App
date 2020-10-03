@@ -28,8 +28,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Map;
 
-import static android.content.Context.INPUT_METHOD_SERVICE;
-import static com.example.basicweatherapp.MainActivity.isMetric;
 import static com.example.basicweatherapp.MainActivity.kphToMph;
 
 public class HomeFragment extends Fragment implements WeatherResponseListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -47,6 +45,7 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
     private TextView humidity;
     private TextView windSpeed;
     private View mFragmentView;
+    public static boolean isMetric = true;
     private SharedPreferences mSharedPrefs;
 
     public HomeFragment() {
@@ -91,20 +90,27 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
     @Override
     public void onResume() {
         super.onResume();
-        buttonSubmit = mFragmentView.findViewById(R.id.submitButton);
-        buttonSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-                if (validateZipCode()) {
-                    data = weatherAPI.getWeatherData(getContext(), zipcode.getText().toString());
-                } else {
-                    displayError();
-                    weatherView.setVisibility(View.GONE);
-                }
-            }
-        });
+        isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
+        String cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
+        callAPI(cityZipCode);
+//        buttonSubmit = mFragmentView.findViewById(R.id.submitButton);
+//        buttonSubmit.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+//                imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+//                if (validateZipCode()) {
+//                    data = weatherAPI.getWeatherData(getContext(), zipcode.getText().toString());
+//                } else {
+//                    displayError();
+//                    weatherView.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+    }
+
+    private void callAPI(String zipCode) {
+        data = weatherAPI.getWeatherData(getContext(), zipCode);
     }
 
     private boolean validateZipCode() {
@@ -170,6 +176,9 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
             configureViews();
         } else if (s.equals(getString(R.string.time_preference_key))) {
 
+        } else if (s.equals(getString(R.string.city_zip_code_key))) {
+            String zipCode = sharedPreferences.getString(s, "02128");
+            callAPI(zipCode);
         }
     }
 }

@@ -17,8 +17,7 @@
         <TextView
             android:id="@+id/select_location"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:gravity="center"
+            android:layout_height="wrap_content"
             android:text="Select Your Location"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -26,20 +25,28 @@
             android:textColor="@color/white"
             android:layout_alignParentStart="true"/>
 
-        <TextView
-            android:id="@+id/city_name"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/choose_city_btn"
+            android:layout_width="150dp"
             android:layout_height="60dp"
-            android:gravity="center"
+            android:background="@color/colorAccent"
+            android:layout_alignParentEnd="true"
+            android:text="Select Zip Code"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
+
+        <TextView
+            android:id="@+id/city_zip_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Current Location"
-            android:drawableEnd="@drawable/ic_outline_my_location_24"
-            android:drawablePadding="10dp"
-            android:textSize="20sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-condensed-medium"
             android:textColor="@color/white"
-            android:layout_marginEnd="5dp"
-            android:layout_alignParentEnd="true"/>
+            android:layout_below="@id/select_location"/>
 
     </RelativeLayout>
 

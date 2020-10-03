@@ -27,7 +27,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static boolean isMetric = true;
     public static final Double kphToMph = 0.621371;
 
     @Override

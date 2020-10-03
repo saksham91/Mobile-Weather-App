@@ -6,13 +6,18 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class SettingsFragment extends Fragment {
 
@@ -21,6 +26,7 @@ public class SettingsFragment extends Fragment {
     private RadioGroup mRadioGroupTime;
     private RadioButton mRadioButtonUnits;
     private RadioButton mRadioButtonTime;
+    private Button mChooseCityButton;
     private SharedPreferences mSharedPrefs;
     private String mUnitPreferenceKey;
     private String mTimePreferenceKey;
@@ -58,7 +64,40 @@ public class SettingsFragment extends Fragment {
         mTimePreferenceKey = getString(R.string.time_preference_key);
         mRadioGroupUnit = mFragmentView.findViewById(R.id.toggle_switch_units);
         mRadioGroupTime = mFragmentView.findViewById(R.id.toggle_switch_time);
+        mChooseCityButton = mFragmentView.findViewById(R.id.choose_city_btn);
         setUpCheckedButtonState();
+
+        mChooseCityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.search_city, null);
+                final EditText editText = dialogView.findViewById(R.id.edit_text);
+                Button buttonOk = dialogView.findViewById(R.id.btn_ok);
+                Button buttonCancel = dialogView.findViewById(R.id.btn_cancel);
+
+                buttonCancel.setOnClickListener(v -> dialog.dismiss() );
+                buttonOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String cityName = editText.getText().toString();
+                        if (cityName.length() < 5) {
+                            Toast.makeText(getContext(), "Invalid City Zip Code", Toast.LENGTH_SHORT).show();
+                        } else {
+                            TextView cityTv = mFragmentView.findViewById(R.id.city_zip_code);
+                            cityTv.setText(cityName);
+                            SharedPreferences.Editor editor = mSharedPrefs.edit();
+                            editor.putString(getString(R.string.city_zip_code_key), cityName);
+                            editor.apply();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+                dialog.setView(dialogView);
+                dialog.show();
+            }
+        });
 
         mRadioGroupUnit.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -98,6 +137,8 @@ public class SettingsFragment extends Fragment {
     }
 
     private void setUpCheckedButtonState() {
+        TextView cityTv = mFragmentView.findViewById(R.id.city_zip_code);
+        cityTv.setText(mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128"));
         if (isMetric()) {
             mRadioGroupUnit.check(R.id.metric);
         } else {

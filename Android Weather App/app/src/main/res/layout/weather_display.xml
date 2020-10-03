@@ -20,6 +20,7 @@
             android:textColor="#f2a618"
             android:fontFamily="sans-serif-condensed-medium"
             android:padding="10dp"
+            android:visibility="gone"
             tools:text="@string/city_name"/>
 
         <TextView

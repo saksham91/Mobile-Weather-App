@@ -9,6 +9,6 @@
         android:color="@color/controlBackground"
         />
     <item
-        android:color="@color/white"
+        android:color="@color/bg_color"
         />
 </selector>
