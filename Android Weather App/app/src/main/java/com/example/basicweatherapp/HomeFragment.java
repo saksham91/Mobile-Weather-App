@@ -32,9 +32,6 @@ import static com.example.basicweatherapp.MainActivity.kphToMph;
 
 public class HomeFragment extends Fragment implements WeatherResponseListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private EditText name;
-    private EditText zipcode;
-    private Button buttonSubmit;
     private TextView dataTV;
     private WeatherAPI weatherAPI;
     private LinearLayout weatherView;
@@ -82,7 +79,6 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
         humidity = mFragmentView.findViewById(R.id.humidity_value);
         windSpeed = mFragmentView.findViewById(R.id.wind_value);
         dataTV = mFragmentView.findViewById(R.id.weatherData);
-        zipcode = mFragmentView.findViewById(R.id.zipCodeText);
         weatherView = mFragmentView.findViewById(R.id.weather_view);
         weatherView.setVisibility(View.GONE);
     }
@@ -93,34 +89,11 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
         isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
         String cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
         callAPI(cityZipCode);
-//        buttonSubmit = mFragmentView.findViewById(R.id.submitButton);
-//        buttonSubmit.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-//                if (validateZipCode()) {
-//                    data = weatherAPI.getWeatherData(getContext(), zipcode.getText().toString());
-//                } else {
-//                    displayError();
-//                    weatherView.setVisibility(View.GONE);
-//                }
-//            }
-//        });
     }
 
     private void callAPI(String zipCode) {
         data = weatherAPI.getWeatherData(getContext(), zipCode);
     }
-
-    private boolean validateZipCode() {
-        return zipcode.getText().toString().length() == 5;
-    }
-
-    private void displayError() {
-        Toast.makeText(getContext(), "Invalid ZipCode", Toast.LENGTH_LONG).show();
-    }
-
 
     @SuppressLint("SetTextI18n")
     private void configureViews() {
