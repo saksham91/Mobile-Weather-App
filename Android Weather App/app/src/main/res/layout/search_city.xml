@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightBlue"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <TextView
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
-        android:text="Select City Name"
+        android:text="Select City Zip Code"
         android:textSize="20sp"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed-medium" />
@@ -26,6 +26,7 @@
         android:padding="10dp"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:hint="e.g. 02128"
         android:fontFamily="sans-serif-condensed-medium"
         android:layout_below="@id/header"/>
 
@@ -34,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/bg_color"
-        android:padding="5dp"
+        android:padding="2dp"
         android:layout_marginRight="15dp"
         android:layout_marginTop="20dp"
         android:text="OK"
@@ -47,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/bg_color"
-        android:padding="5dp"
+        android:padding="2dp"
         android:layout_marginStart="15dp"
         android:layout_marginTop="20dp"
         android:text="Cancel"

@@ -1,5 +1,7 @@
 package com.example.basicweatherapp;
 
+import com.example.basicweatherapp.models.FiveDayData;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -15,7 +17,7 @@ public interface WeatherService {
     Call<WeatherData> getWeatherDataByZipCode(@Query("zip") String zipCode, @Query("appid") String appId);
 
     @GET("data/2.5/forecast?")
-    Call<WeatherResponse> getWeatherForecastByZipCode(@Query("zip") String zipCode, @Query("appid") String appId);
+    Call<FiveDayData> getWeatherForecastByZipCode(@Query("zip") String zipCode, @Query("appid") String appId);
 
     @GET("data/2.5/weather?")
     Call<WeatherData> getWeatherDataCurrentLocation(@Query("lat") String lat, @Query("lon") String lon, @Query("appid") String appId);

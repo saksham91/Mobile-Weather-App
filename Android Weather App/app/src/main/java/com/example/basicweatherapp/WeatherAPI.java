@@ -2,11 +2,11 @@ package com.example.basicweatherapp;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
+import com.example.basicweatherapp.models.FiveDayData;
+import com.example.basicweatherapp.models.ForecastData;
 import com.example.basicweatherapp.models.Main;
 import com.example.basicweatherapp.models.Weather;
 import com.example.basicweatherapp.models.Wind;
@@ -28,15 +28,16 @@ public class WeatherAPI {
     private static WeatherAPI mWeatherAPI;
     private Gson mGson;
     private final String baseURL = "https://api.openweathermap.org/";
-    private final String appId = "API_KEY";
+    private final String appId = "8e845eb9a26e423f0d730d3c4759a46d";
     private final String zipCode = "10001";
     private Retrofit mRetrofit;
-    private WeatherResponseListener mListener;
-    private Map<String, String> values = new HashMap<>();
+    private ArrayList<WeatherResponseListener> mListener;
+    private Map<String, String> currentWeatherData = new HashMap<>();
+    private FiveDayData fiveDayData;
 
     private WeatherAPI() {
         mGson = new Gson();
-        mListener = null;
+        mListener = new ArrayList<>();
     }
 
     public static WeatherAPI getInstance() {
@@ -67,7 +68,29 @@ public class WeatherAPI {
                 Log.d(TAG, "onFailure: ");
             }
         });
-        return values;
+        return currentWeatherData;
+    }
+
+    public FiveDayData getFiveDaysForecast(final Context context, String zipCode) {
+        if (mRetrofit == null) { initRetrofit(); }
+        WeatherService weatherService = mRetrofit.create(WeatherService.class);
+        Call<FiveDayData> call = weatherService.getWeatherForecastByZipCode(zipCode, appId);
+        call.enqueue(new Callback<FiveDayData>() {
+            @Override
+            public void onResponse(Call<FiveDayData> call, Response<FiveDayData> response) {
+                if (response.code() == 200) {
+                    fiveDayData = response.body();
+                    assert fiveDayData != null;
+                    notifySubscriber();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FiveDayData> call, Throwable t) {
+                Log.d(TAG, "getWeatherForecastByZipCode error: ");
+            }
+        });
+        return fiveDayData;
     }
 
     private void initRetrofit() {
@@ -77,7 +100,7 @@ public class WeatherAPI {
                     .build();
         }
 
-    private Map<String, String> handleCurrentWeatherData(@NonNull WeatherData weatherData) {
+    private void handleCurrentWeatherData(@NonNull WeatherData weatherData) {
         String icon = null;
         Main tempData = weatherData.main;
         Wind windData = weatherData.wind;
@@ -85,14 +108,13 @@ public class WeatherAPI {
         if (!weathers.isEmpty()) {
             icon = weathers.get(0).icon;
         }
-        values.put("cityName", weatherData.name);
-        values.put("currentTemp", String.valueOf(convertToTempScale(tempData.temp)));
-        values.put("minTemp", String.valueOf(convertToTempScale(tempData.temp_min)));
-        values.put("maxTemp", String.valueOf(convertToTempScale(tempData.temp_max)));
-        values.put("humidity", tempData.humidity);
-        values.put("windSpeed", windData.speed);
-        values.put("icon", icon);
-        return values;
+        currentWeatherData.put("cityName", weatherData.name);
+        currentWeatherData.put("currentTemp", String.valueOf(convertToTempScale(tempData.temp)));
+        currentWeatherData.put("minTemp", String.valueOf(convertToTempScale(tempData.temp_min)));
+        currentWeatherData.put("maxTemp", String.valueOf(convertToTempScale(tempData.temp_max)));
+        currentWeatherData.put("humidity", tempData.humidity);
+        currentWeatherData.put("windSpeed", windData.speed);
+        currentWeatherData.put("icon", icon);
     }
 
     private int convertToTempScale(String temp) {
@@ -100,13 +122,15 @@ public class WeatherAPI {
     }
 
     public void subscribeToWeatherResponseData(WeatherResponseListener listener) {
-        mListener = listener;
+        mListener.add(listener);
     }
 
     private void notifySubscriber() {
         if (mListener == null) return;
 
-        mListener.onResponseSuccess();
+        for(WeatherResponseListener listener: mListener) {
+            listener.onResponseSuccess();
+        }
     }
 
     private void handleWeatherData(ArrayList<ForecastData> dataList) {

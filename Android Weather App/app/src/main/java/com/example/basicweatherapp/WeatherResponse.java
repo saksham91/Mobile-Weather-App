@@ -2,6 +2,8 @@ package com.example.basicweatherapp;
 
 import androidx.annotation.NonNull;
 
+import com.example.basicweatherapp.models.ForecastData;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 

@@ -1,4 +1,4 @@
-package com.example.basicweatherapp;
+package com.example.basicweatherapp.models;
 
 import com.example.basicweatherapp.models.Clouds;
 import com.example.basicweatherapp.models.Main;

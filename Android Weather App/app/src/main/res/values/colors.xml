@@ -2,11 +2,12 @@
 <resources>
     <color name="colorPrimary">#00574B</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#f2a618</color>
+    <color name="colorAccent">#014952</color>
     <color name="blue">#FF005a9c</color>
     <color name="lightBlue">#ff6691c4</color>
     <color name="lighterBlue">#ffcdd8ec</color>
     <color name="white">#ffffffff</color>
     <color name="controlBackground">@color/white</color>
-    <color name="bg_color">#242424</color>
+    <color name="bg_color">#3700B3</color>
+    <color name="tab_color">#FF7E00</color>
 </resources>

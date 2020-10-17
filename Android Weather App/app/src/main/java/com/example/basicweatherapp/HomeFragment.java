@@ -61,6 +61,9 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
         weatherAPI.subscribeToWeatherResponseData(this);
         mSharedPrefs = getActivity().getSharedPreferences(SettingsFragment.PREFERENCE_FILE, Context.MODE_PRIVATE);
         mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
+        isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
+        String cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
+        callAPI(cityZipCode);
     }
 
     @Override
@@ -81,14 +84,6 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
         dataTV = mFragmentView.findViewById(R.id.weatherData);
         weatherView = mFragmentView.findViewById(R.id.weather_view);
         weatherView.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
-        String cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
-        callAPI(cityZipCode);
     }
 
     private void callAPI(String zipCode) {
