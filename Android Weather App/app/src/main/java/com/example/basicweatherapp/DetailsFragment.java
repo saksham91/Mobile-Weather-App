@@ -4,26 +4,40 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+import android.widget.TextView;
 
+import com.example.basicweatherapp.adapters.ForecastDataAdapter;
 import com.example.basicweatherapp.models.FiveDayData;
+import com.example.basicweatherapp.models.List;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link DetailsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DetailsFragment extends Fragment implements WeatherResponseListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class DetailsFragment extends Fragment implements WeatherResponseListener, SharedPreferences.OnSharedPreferenceChangeListener, ExpandableListView.OnGroupClickListener {
 
     private WeatherAPI weatherAPI;
     private SharedPreferences mSharedPrefs;
     private FiveDayData fiveDayData;
+    private View mFragmentView;
+    private ExpandableListView mExpandableListView;
+    private ForecastDataAdapter mForecastDataAdapter;
+    private ArrayList<List> finalList = new ArrayList<>();
     private boolean isMetric = true;
+    private java.util.List candidateTimes = Arrays.asList("03:00:00", "09:00:00", "15:00:00", "21:00:00");
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -47,7 +61,8 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_details, container, false);
+        mFragmentView = inflater.inflate(R.layout.fragment_details, container, false);
+        return mFragmentView;
     }
 
     @Override
@@ -63,8 +78,25 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
     }
 
     private void configureViews() {
+        mExpandableListView = mFragmentView.findViewById(R.id.forecast_list);
         if (fiveDayData != null) {
-            Log.d("DetailsFragment", "configureViews: " + fiveDayData.city.name);
+            TextView cityNameHeader = mFragmentView.findViewById(R.id.cityNameHeader);
+            cityNameHeader.setText(fiveDayData.city.name);
+            filterList(fiveDayData);
+            mForecastDataAdapter = new ForecastDataAdapter(getContext(), finalList);
+            mExpandableListView.setOnGroupClickListener(this);
+            mExpandableListView.setAdapter(mForecastDataAdapter);
+        }
+    }
+
+    private void filterList(@NonNull FiveDayData fiveDayData) {
+        finalList.clear();
+        for (List timeOfDay : fiveDayData.list) {
+            Log.d("DetailsFragment", "filterList: " + timeOfDay.dtTxt);
+            String[] time = timeOfDay.dtTxt.split(" ");
+            if (candidateTimes.contains(time[1])) {
+                finalList.add(timeOfDay);
+            }
         }
     }
 
@@ -82,5 +114,11 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
     @Override
     public void onResponseSuccess() {
         configureViews();
+    }
+
+    @Override
+    public boolean onGroupClick(ExpandableListView expandableListView, View view, int groupPosition, long id) {
+        final List group = mForecastDataAdapter.getGroup(groupPosition);
+        return false;
     }
 }

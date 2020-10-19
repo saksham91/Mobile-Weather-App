@@ -3,6 +3,8 @@ package com.example.basicweatherapp.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class FiveDayData {
     @SerializedName("cod")
     @Expose
@@ -15,7 +17,7 @@ public class FiveDayData {
     public Integer cnt;
     @SerializedName("list")
     @Expose
-    public java.util.List<List> list = null;
+    public ArrayList<List> list = null;
     @SerializedName("city")
     @Expose
     public City city;
