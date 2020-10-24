@@ -4,157 +4,174 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    tools:background="@drawable/bg_gradient_color"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/weatherData"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/city_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="22sp"
-            android:textColor="#f2a618"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:padding="10dp"
-            android:visibility="gone"
-            tools:text="@string/city_name"/>
-
-        <TextView
-            android:id="@+id/more_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#FFF"
-            android:gravity="center"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:padding="10dp"
-            android:drawableEnd="@drawable/ic_chevron_right_black_24dp"
-            android:text="5 day Forecast"
-            android:visibility="invisible"
-            android:layout_alignParentEnd="true" />
-
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/colorAccent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:textColor="#FFF"
+        android:fontFamily="sans-serif-condensed-medium"
+        tools:text="Failed to retrieve data..."
+        android:visibility="gone" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp">
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/max_temperature_label"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
+            android:id="@+id/feels_like_label"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginStart="25dp"
+            android:textSize="16sp"
+            android:gravity="center"
             android:textStyle="bold"
             android:textColor="#FFF"
             android:fontFamily="sans-serif-condensed-medium"
-            android:text="Max Temp"/>
+            android:text="Feels Like"/>
 
         <TextView
-            android:id="@+id/max_temperature_value"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
+            android:id="@+id/feels_like_value"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
             android:textStyle="bold"
             android:textColor="#FFF"
-            android:layout_below="@id/max_temperature_label"
+            android:textSize="16sp"
+            android:layout_marginEnd="25dp"
+            android:layout_alignParentEnd="true"
             android:fontFamily="sans-serif-condensed-medium"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             tools:text="20"/>
 
-        <TextView
-            android:id="@+id/min_temp_label"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
-            android:textStyle="bold"
-            android:textColor="#FFF"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:layout_toEndOf="@id/max_temperature_label"
-            android:layout_marginStart="20dp"
-            android:text="Min Temp"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:background="@color/white"
+            android:layout_below="@id/feels_like_value" />
 
-        <TextView
-            android:id="@+id/min_temp_value"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:textStyle="bold"
-            android:textColor="#FFF"
-            android:layout_below="@id/wind_text"
-            android:layout_toEndOf="@id/max_temperature_label"
-            android:layout_marginStart="20dp"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:gravity="center_horizontal"
-            tools:text="20"/>
+    </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/wind_text"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
             android:textStyle="bold"
+            android:textSize="16sp"
+            android:gravity="center"
             android:textColor="#FFF"
             android:fontFamily="sans-serif-condensed-medium"
-            android:layout_toEndOf="@id/min_temp_label"
-            android:gravity="center_horizontal"
-            android:layout_marginStart="20dp"
-            android:text="Wind"/>
+            android:layout_marginStart="25dp"
+            android:text="Wind Speed"/>
 
         <TextView
             android:id="@+id/wind_value"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginEnd="25dp"
             android:textStyle="bold"
+            android:textSize="16sp"
             android:textColor="#FFF"
-            android:layout_below="@id/wind_text"
-            android:layout_toEndOf="@id/min_temp_label"
+            android:layout_alignParentEnd="true"
             android:layout_marginStart="20dp"
             android:fontFamily="sans-serif-condensed-medium"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             tools:text="20"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:background="@color/white"
+            android:layout_below="@id/wind_value" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/humidity_text"
-            android:layout_width="60dp"
-            android:layout_height="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
             android:textStyle="bold"
+            android:textSize="16sp"
+            android:gravity="center"
             android:textColor="#FFF"
             android:fontFamily="sans-serif-condensed-medium"
-            android:layout_toEndOf="@id/wind_text"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="25dp"
             android:text="Humidity"/>
 
         <TextView
             android:id="@+id/humidity_value"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginEnd="25dp"
             android:textStyle="bold"
+            android:textSize="16sp"
             android:textColor="#FFF"
-            android:layout_below="@id/humidity_text"
-            android:layout_toEndOf="@id/wind_text"
+            android:layout_alignParentEnd="true"
             android:layout_marginStart="20dp"
             android:fontFamily="sans-serif-condensed-medium"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             tools:text="20"/>
 
-
-        <ImageView
-            android:id="@+id/weather_logo"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="10dp"
-            android:gravity="top"
-            android:layout_alignParentEnd="true"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:background="@color/white"
+            android:layout_below="@id/humidity_value" />
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/condition_label"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="#FFF"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:layout_marginStart="25dp"
+            android:text="Condition"/>
+
+        <TextView
+            android:id="@+id/condition_value"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginEnd="25dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFF"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="20dp"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:gravity="center"
+            tools:text="20"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

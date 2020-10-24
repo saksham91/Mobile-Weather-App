@@ -5,32 +5,24 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.basicweatherapp.util.UnitsFormatter;
-import com.google.android.material.tabs.TabItem;
-import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
+import org.joda.time.DateTime;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.example.basicweatherapp.MainActivity.kphToMph;
 
 public class HomeFragment extends Fragment implements WeatherResponseListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -38,9 +30,12 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
     private WeatherAPI weatherAPI;
     private LinearLayout weatherView;
     private Map<String, String> data;
+    private TextView currentTemp;
+    private TextView currentTime;
+    private TextView todayDate;
     private TextView cityName;
-    private TextView maxTemp;
-    private TextView minTemp;
+    private TextView feelsLike;
+    private TextView weatherCondition;
     private TextView humidity;
     private TextView windSpeed;
     private View mFragmentView;
@@ -74,10 +69,13 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
 
     private void setupViews() {
         cityName = mFragmentView.findViewById(R.id.city_name);
-        maxTemp = mFragmentView.findViewById(R.id.max_temperature_value);
-        minTemp = mFragmentView.findViewById(R.id.min_temp_value);
+        currentTemp = mFragmentView.findViewById(R.id.current_temp);
+        currentTime = mFragmentView.findViewById(R.id.current_time);
+        todayDate = mFragmentView.findViewById(R.id.current_date);
+        feelsLike = mFragmentView.findViewById(R.id.feels_like_value);
         humidity = mFragmentView.findViewById(R.id.humidity_value);
         windSpeed = mFragmentView.findViewById(R.id.wind_value);
+        weatherCondition = mFragmentView.findViewById(R.id.condition_value);
         dataTV = mFragmentView.findViewById(R.id.weatherData);
         weatherView = mFragmentView.findViewById(R.id.weather_view);
         weatherView.setVisibility(View.GONE);
@@ -98,17 +96,25 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
             return;
         }
 
+        DateTime dt = new DateTime();
+        todayDate.setText(getFormattedDate(dt));
+        currentTime.setText(getFormattedTime(dt));
+
         String icon = data.get("icon");
         weatherView.setVisibility(View.VISIBLE);
         cityName.setText(data.get("cityName"));
+        weatherCondition.setText(capitalizeFirstAlphabet(data.get("condition")));
         humidity.setText(data.get("humidity") + " %");
+
         if (isMetric) {
-            maxTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("maxTemp")));
-            minTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("minTemp")));
+            feelsLike.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("feelsLike")));
+            currentTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius),data.get("currentTemp")));
+            //minTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("minTemp")));
             windSpeed.setText(data.get("windSpeed") + " kph");
         } else {
-            maxTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(UnitsFormatter.convertToImperial(data.get("maxTemp"), true))));
-            minTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(UnitsFormatter.convertToImperial(data.get("minTemp"), true))));
+            feelsLike.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(UnitsFormatter.convertToImperial(data.get("feelsLike"), true))));
+            currentTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit),String.valueOf(UnitsFormatter.convertToImperial(data.get("currentTemp"), true))));
+            //minTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(UnitsFormatter.convertToImperial(data.get("minTemp"), true))));
             windSpeed.setText(UnitsFormatter.convertToImperial(data.get("windSpeed"), false) + " mph");
         }
         getImageView(icon);
@@ -136,5 +142,26 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
             String zipCode = sharedPreferences.getString(s, "02128");
             callAPI(zipCode);
         }
+    }
+
+    private String getFormattedDate(DateTime dateTime) {
+        SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
+        return formatter.format(dateTime.toDate());
+    }
+
+    private String getFormattedTime(DateTime dateTime) {
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        return formatter.format(dateTime.toDate());
+    }
+
+    private String capitalizeFirstAlphabet(String str) {
+        if (str == null || str.length() == 0) return "";
+
+        String[] words = str.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1)).append(" ");
+        }
+        return sb.toString().trim();
     }
 }

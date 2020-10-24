@@ -30,15 +30,12 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
     private Context mContext;
     private java.util.List<String> mDayNames;
     private Map<String, java.util.List<List>> mTimeBasedWeather;
-    private Map<String, String> timeFormatUIDisplay;
-    private boolean isExpanded = false;
     private boolean isMetric;
 
     public ForecastDataAdapter(Context context, java.util.List<String> dayNames, Map<String, java.util.List<List>> timeBasedWeather, boolean isMetric) {
         this.mContext = context;
         this.mDayNames = dayNames;
         this.mTimeBasedWeather = timeBasedWeather;
-        this.timeFormatUIDisplay = new HashMap<>();
         this.isMetric = isMetric;
     }
 
@@ -81,7 +78,7 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int listPosition, boolean b, View view, ViewGroup viewGroup) {
+    public View getGroupView(int listPosition, boolean isExpanded, View view, ViewGroup viewGroup) {
         final LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (inflater == null) {
             return null;
@@ -89,12 +86,12 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
 
         if (view == null) {
             view = inflater.inflate(R.layout.forecast_collapsed_data, null);
-            updateArrows(view, isExpanded);
-            TextView dateHeader = view.findViewById(R.id.date);
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
-            DateTime dateTime = formatter.parseDateTime(mDayNames.get(listPosition));
-            dateHeader.setText(getFormattedDate(dateTime));
         }
+        updateArrows(view, isExpanded);
+        TextView dateHeader = view.findViewById(R.id.date);
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+        DateTime dateTime = formatter.parseDateTime(mDayNames.get(listPosition));
+        dateHeader.setText(getFormattedDate(dateTime));
 
         return view;
     }
@@ -153,7 +150,6 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
     private void fillChildWithView(View view, List item) {
         if (view == null) return;
 
-
         TextView forecastTime = view.findViewById(R.id.forecast_data_time);
         TextView temperature = view.findViewById(R.id.temp_value);
         TextView wind = view.findViewById(R.id.wind_value);
@@ -163,13 +159,14 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
 
         if (item != null) {
             int temp = (int) Double.parseDouble(item.main.temp);
+            int windSpeed = (int) Double.parseDouble(item.wind.speed);
             String url = "https://openweathermap.org/img/wn/" + item.weather.get(0).icon + "@2x.png";
             forecastTime.setText(UnitsFormatter.getFormattedTime(item.dtTxt.split(" ")[1], false));
             temperature.setText(isMetric ? String.format(Locale.getDefault(), mContext.getString(R.string.temp_in_celsius), String.valueOf(temp))
                     : String.format(Locale.getDefault(), mContext.getString(R.string.temp_in_fahrenheit), String.valueOf(temp)));
-            wind.setText(isMetric ? item.wind.speed + " kph" : item.wind.speed + " mph");
+            wind.setText(isMetric ? windSpeed + " kph" : windSpeed + " mph");
             if (item.rain != null) {
-                rain.setText(item.rain.h3 + " mm");
+                rain.setText((int) Math.round(item.rain.h3) + " mm");
             } else {
                 rain.setText("0 mm");
             }
@@ -181,10 +178,5 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
     private String getFormattedDate(DateTime dateTime) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
         return formatter.format(dateTime.toDate());
-    }
-
-    private String convertToTempScale(String temp) {
-        int temperature = (int) Math.round(Double.parseDouble(temp) - 273.15);
-        return String.valueOf(temperature);
     }
 }

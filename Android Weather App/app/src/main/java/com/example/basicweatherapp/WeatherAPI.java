@@ -32,7 +32,7 @@ public class WeatherAPI {
     private static WeatherAPI mWeatherAPI;
     private Gson mGson;
     private final String baseURL = "https://api.openweathermap.org/";
-    private final String appId = "8e845eb9a26e423f0d730d3c4759a46d";
+    private String appId;
     private final String zipCode = "10001";
     private Retrofit mRetrofit;
     private ArrayList<WeatherResponseListener> mListener;
@@ -47,6 +47,7 @@ public class WeatherAPI {
         mListener = new ArrayList<>();
         dayNames = new ArrayList<>();
         timeBasedWeather = new HashMap<>();
+        appId = BuildConfig.ApiKey;
     }
 
     public static WeatherAPI getInstance() {
@@ -111,16 +112,21 @@ public class WeatherAPI {
 
     private void handleCurrentWeatherData(@NonNull WeatherData weatherData) {
         String icon = null;
+        String condition = null;
         Main tempData = weatherData.main;
         Wind windData = weatherData.wind;
         ArrayList<Weather> weathers = weatherData.weather;
         if (!weathers.isEmpty()) {
             icon = weathers.get(0).icon;
+            condition = weathers.get(0).description;
         }
         currentWeatherData.put("cityName", weatherData.name);
         currentWeatherData.put("currentTemp", String.valueOf(convertToTempScale(tempData.temp)));
         currentWeatherData.put("minTemp", String.valueOf(convertToTempScale(tempData.temp_min)));
         currentWeatherData.put("maxTemp", String.valueOf(convertToTempScale(tempData.temp_max)));
+        currentWeatherData.put("feelsLike", String.valueOf(convertToTempScale(tempData.feels_like)));
+        currentWeatherData.put("dateAsString", weatherData.dt);
+        currentWeatherData.put("condition", condition);
         currentWeatherData.put("humidity", tempData.humidity);
         currentWeatherData.put("windSpeed", windData.speed);
         currentWeatherData.put("icon", icon);
