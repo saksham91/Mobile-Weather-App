@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.basicweatherapp.models.FiveDayData;
 import com.example.basicweatherapp.models.ForecastData;
@@ -12,8 +13,11 @@ import com.example.basicweatherapp.models.Weather;
 import com.example.basicweatherapp.models.Wind;
 import com.google.gson.Gson;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -32,12 +36,17 @@ public class WeatherAPI {
     private final String zipCode = "10001";
     private Retrofit mRetrofit;
     private ArrayList<WeatherResponseListener> mListener;
+    private List<String> dayNames;
+    private Map<String, List<com.example.basicweatherapp.models.List>> timeBasedWeather;
     private Map<String, String> currentWeatherData = new HashMap<>();
     private FiveDayData fiveDayData;
+    private List<String> candidateTimes = Arrays.asList("03:00:00", "09:00:00", "15:00:00", "21:00:00");
 
     private WeatherAPI() {
         mGson = new Gson();
         mListener = new ArrayList<>();
+        dayNames = new ArrayList<>();
+        timeBasedWeather = new HashMap<>();
     }
 
     public static WeatherAPI getInstance() {
@@ -115,6 +124,50 @@ public class WeatherAPI {
         currentWeatherData.put("humidity", tempData.humidity);
         currentWeatherData.put("windSpeed", windData.speed);
         currentWeatherData.put("icon", icon);
+    }
+
+    public String getCityName() {
+        if (fiveDayData != null && dayNames != null) {
+            return fiveDayData.city.name;
+        }
+        return "";
+    }
+
+    @Nullable
+    public List<String> filterForecastDays() {
+        if (fiveDayData != null) {
+            for (com.example.basicweatherapp.models.List times : fiveDayData.list) {
+                String[] time = times.dtTxt.split(" ");
+                if (!dayNames.contains(time[0])) {
+                    dayNames.add(time[0]);
+                }
+            }
+        }
+        return dayNames;
+    }
+
+    @Nullable
+    public Map<String, List<com.example.basicweatherapp.models.List>> getTimeBasedWeatherInfo() {
+        if (fiveDayData == null || dayNames == null || dayNames.size() == 0) return null;
+
+        // list of List items filtered according to required time stamps (03:00, 09:00....)
+        List<com.example.basicweatherapp.models.List> weatherList = new ArrayList<>();
+
+        for (String dayName : dayNames) {
+            List<com.example.basicweatherapp.models.List> tempList = new ArrayList<>();
+            for (com.example.basicweatherapp.models.List listItem : fiveDayData.list) {
+                String[] day = listItem.dtTxt.split(" ");
+                if (candidateTimes.contains(day[1]) && dayName.equals(day[0])) {
+                    tempList.add(listItem);
+                }
+            }
+
+            if (tempList.size() == 4) {
+                timeBasedWeather.put(dayName, tempList);
+            }
+        }
+
+        return timeBasedWeather;
     }
 
     private int convertToTempScale(String temp) {

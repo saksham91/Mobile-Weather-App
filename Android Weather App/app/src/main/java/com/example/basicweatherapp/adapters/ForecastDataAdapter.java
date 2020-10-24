@@ -21,49 +21,52 @@ import org.joda.time.format.DateTimeFormatter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Map;
 
 public class ForecastDataAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
-    private ArrayList<List> mListItems;
+    private java.util.List<String> mDayNames;
+    private Map<String, java.util.List<List>> mTimeBasedWeather;
     private boolean isExpanded = false;
 
-    public ForecastDataAdapter(Context context, ArrayList<List> listItems) {
+    public ForecastDataAdapter(Context context, java.util.List<String> dayNames, Map<String, java.util.List<List>> timeBasedWeather) {
         this.mContext = context;
-        this.mListItems = listItems;
+        this.mDayNames = dayNames;
+        this.mTimeBasedWeather = timeBasedWeather;
     }
 
     @Override
     public int getGroupCount() {
-        return (mListItems != null ? 5 : 0);
+        return 5;
     }
 
     @Override
-    public int getChildrenCount(int i) {
-        return 4;
+    public int getChildrenCount(int groupPosition) {
+        return mTimeBasedWeather != null ? mTimeBasedWeather.get(mDayNames.get(groupPosition)).size() : 0;
     }
 
     @Override
-    public List getGroup(int groupPosition) {
-        if(mListItems == null) {
+    public Object getGroup(int groupPosition) {
+        if (mDayNames == null) {
             return null;
         }
-        return mListItems.get(groupPosition * 4);
+        return mDayNames.get(groupPosition);
     }
 
     @Override
     public List getChild(int groupPosition, int childPosition) {
-        return mListItems.get(childPosition);
+        return mTimeBasedWeather.get(mDayNames.get(groupPosition)).get(childPosition);
     }
 
     @Override
-    public long getGroupId(int i) {
-        return 0;
+    public long getGroupId(int groupPosition) {
+        return groupPosition;
     }
 
     @Override
-    public long getChildId(int i, int i1) {
-        return 0;
+    public long getChildId(int groupPosition, int childPosition) {
+        return childPosition;
     }
 
     @Override
@@ -82,8 +85,8 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
             view = inflater.inflate(R.layout.forecast_collapsed_data, null);
             updateArrows(view, isExpanded);
             TextView dateHeader = view.findViewById(R.id.date);
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-            DateTime dateTime = formatter.parseDateTime(mListItems.get(listPosition * 4).dtTxt);
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+            DateTime dateTime = formatter.parseDateTime(mDayNames.get(listPosition));
             Log.d("ForecastDateAdapter", "date: " + dateTime);
             dateHeader.setText(getFormattedDate(dateTime));
         }
@@ -92,8 +95,9 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int listPosition, int expandedListPosition, boolean b, View view, ViewGroup viewGroup) {
-        List item = getChild(listPosition, expandedListPosition);
+    public View getChildView(int groupPosition, int childPosition, boolean b, View view, ViewGroup viewGroup) {
+        List item = getChild(groupPosition, childPosition);
+
         if (view == null) {
             LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             if (layoutInflater == null) return null;

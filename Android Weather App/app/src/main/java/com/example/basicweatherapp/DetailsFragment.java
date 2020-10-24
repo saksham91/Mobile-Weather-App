@@ -21,6 +21,7 @@ import com.example.basicweatherapp.models.List;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,24 +80,14 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
 
     private void configureViews() {
         mExpandableListView = mFragmentView.findViewById(R.id.forecast_list);
-        if (fiveDayData != null) {
+        if (fiveDayData != null && weatherAPI != null) {
             TextView cityNameHeader = mFragmentView.findViewById(R.id.cityNameHeader);
-            cityNameHeader.setText(fiveDayData.city.name);
-            filterList(fiveDayData);
-            mForecastDataAdapter = new ForecastDataAdapter(getContext(), finalList);
+            cityNameHeader.setText(weatherAPI.getCityName());
+            java.util.List<String> dayNames = weatherAPI.filterForecastDays();
+            Map<String, java.util.List<List>> timeBasedWeatherData = weatherAPI.getTimeBasedWeatherInfo();
+            mForecastDataAdapter = new ForecastDataAdapter(getContext(), dayNames, timeBasedWeatherData);
             mExpandableListView.setOnGroupClickListener(this);
             mExpandableListView.setAdapter(mForecastDataAdapter);
-        }
-    }
-
-    private void filterList(@NonNull FiveDayData fiveDayData) {
-        finalList.clear();
-        for (List timeOfDay : fiveDayData.list) {
-            Log.d("DetailsFragment", "filterList: " + timeOfDay.dtTxt);
-            String[] time = timeOfDay.dtTxt.split(" ");
-            if (candidateTimes.contains(time[1])) {
-                finalList.add(timeOfDay);
-            }
         }
     }
 
@@ -118,7 +109,7 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
 
     @Override
     public boolean onGroupClick(ExpandableListView expandableListView, View view, int groupPosition, long id) {
-        final List group = mForecastDataAdapter.getGroup(groupPosition);
+        final Object group = mForecastDataAdapter.getGroup(groupPosition);
         return false;
     }
 }
