@@ -5,19 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
+    android:background="@drawable/bg_gradient_color"
     tools:context=".DetailsFragment">
 
     <TextView
         android:id="@+id/cityNameHeader"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/city_name"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
         android:layout_marginBottom="20dp"
-        android:textSize="22sp"
-        android:textColor="#000"
+        android:textSize="26sp"
+        android:gravity="center"
+        android:textColor="#FFF"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed-medium"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -29,10 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:nestedScrollingEnabled="true"
-        android:divider="@android:color/transparent"
         android:groupIndicator="@null"
         app:layout_constraintTop_toBottomOf="@id/cityNameHeader"
-        app:layout_constraintStart_toStartOf="parent"
-        android:listSelector="@android:color/transparent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

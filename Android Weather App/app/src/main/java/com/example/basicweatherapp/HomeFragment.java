@@ -22,6 +22,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.basicweatherapp.util.UnitsFormatter;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
@@ -106,20 +107,11 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
             minTemp.setText(String.format(getResources().getString(R.string.temp_in_celsius), data.get("minTemp")));
             windSpeed.setText(data.get("windSpeed") + " kph");
         } else {
-            maxTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(convertToImperial(data.get("maxTemp"), true))));
-            minTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(convertToImperial(data.get("minTemp"), true))));
-            windSpeed.setText(convertToImperial(data.get("windSpeed"), false) + " mph");
+            maxTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(UnitsFormatter.convertToImperial(data.get("maxTemp"), true))));
+            minTemp.setText(String.format(getResources().getString(R.string.temp_in_fahrenheit), String.valueOf(UnitsFormatter.convertToImperial(data.get("minTemp"), true))));
+            windSpeed.setText(UnitsFormatter.convertToImperial(data.get("windSpeed"), false) + " mph");
         }
         getImageView(icon);
-    }
-
-
-    private int convertToImperial(String metricValue, boolean isTemp) {
-        if (!isTemp) {
-            return (int) Math.round(Double.parseDouble(metricValue) * kphToMph);
-        }
-        double temperatureInCelsius = Double.parseDouble(metricValue);
-        return (int) Math.round(temperatureInCelsius * 1.8 + 32);
     }
 
     private void getImageView(String icon) {

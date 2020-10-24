@@ -167,7 +167,7 @@ public class WeatherAPI {
                 }
             }
 
-            if (tempList.size() == 4) {
+            if (tempList.size() >= 3) {
                 timeBasedWeather.put(dayName, tempList);
             }
         }

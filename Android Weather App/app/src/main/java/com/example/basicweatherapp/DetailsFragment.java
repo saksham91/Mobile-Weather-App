@@ -87,7 +87,7 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
             cityNameHeader.setText(weatherAPI.getCityName());
             java.util.List<String> dayNames = weatherAPI.filterForecastDays();
             Map<String, java.util.List<List>> timeBasedWeatherData = weatherAPI.getTimeBasedWeatherInfo();
-            mForecastDataAdapter = new ForecastDataAdapter(getContext(), dayNames, timeBasedWeatherData);
+            mForecastDataAdapter = new ForecastDataAdapter(getContext(), dayNames, timeBasedWeatherData, isMetric);
             mExpandableListView.setOnGroupClickListener(this);
             mExpandableListView.setAdapter(mForecastDataAdapter);
         }

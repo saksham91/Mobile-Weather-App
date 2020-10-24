@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.basicweatherapp.R;
 import com.example.basicweatherapp.models.List;
+import com.example.basicweatherapp.util.UnitsFormatter;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
@@ -19,7 +21,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -28,12 +30,16 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
     private Context mContext;
     private java.util.List<String> mDayNames;
     private Map<String, java.util.List<List>> mTimeBasedWeather;
+    private Map<String, String> timeFormatUIDisplay;
     private boolean isExpanded = false;
+    private boolean isMetric;
 
-    public ForecastDataAdapter(Context context, java.util.List<String> dayNames, Map<String, java.util.List<List>> timeBasedWeather) {
+    public ForecastDataAdapter(Context context, java.util.List<String> dayNames, Map<String, java.util.List<List>> timeBasedWeather, boolean isMetric) {
         this.mContext = context;
         this.mDayNames = dayNames;
         this.mTimeBasedWeather = timeBasedWeather;
+        this.timeFormatUIDisplay = new HashMap<>();
+        this.isMetric = isMetric;
     }
 
     @Override
@@ -87,7 +93,6 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
             TextView dateHeader = view.findViewById(R.id.date);
             DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
             DateTime dateTime = formatter.parseDateTime(mDayNames.get(listPosition));
-            Log.d("ForecastDateAdapter", "date: " + dateTime);
             dateHeader.setText(getFormattedDate(dateTime));
         }
 
@@ -101,10 +106,29 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
         if (view == null) {
             LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             if (layoutInflater == null) return null;
-            view = layoutInflater.inflate(R.layout.forecast_row_data, null);
+            view = layoutInflater.inflate(R.layout.forecast_expanded_data, null);
+        }
+
+        if (groupPosition > 0) {
+            hideLabels(view);
         }
         fillChildWithView(view, item);
         return view;
+    }
+
+    private void hideLabels(View view) {
+        TextView tv1 = view.findViewById(R.id.forecast_data_time_label);
+        TextView tv2 = view.findViewById(R.id.temp_label);
+        TextView tv3 = view.findViewById(R.id.wind_label);
+        TextView tv4 = view.findViewById(R.id.rain_label);
+        TextView tv5 = view.findViewById(R.id.humidity_label);
+        TextView tv6 = view.findViewById(R.id.weather_icon_label);
+        tv1.setVisibility(View.GONE);
+        tv2.setVisibility(View.GONE);
+        tv3.setVisibility(View.GONE);
+        tv4.setVisibility(View.GONE);
+        tv5.setVisibility(View.GONE);
+        tv6.setVisibility(View.GONE);
     }
 
     @Override
@@ -129,6 +153,7 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
     private void fillChildWithView(View view, List item) {
         if (view == null) return;
 
+
         TextView forecastTime = view.findViewById(R.id.forecast_data_time);
         TextView temperature = view.findViewById(R.id.temp_value);
         TextView wind = view.findViewById(R.id.wind_value);
@@ -137,14 +162,16 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
         ImageView image = view.findViewById(R.id.weather_icon);
 
         if (item != null) {
+            int temp = (int) Double.parseDouble(item.main.temp);
             String url = "https://openweathermap.org/img/wn/" + item.weather.get(0).icon + "@2x.png";
-            forecastTime.setText(item.dtTxt.split(" ")[1]);
-            temperature.setText(item.main.temp);
-            wind.setText(item.wind.speed);
+            forecastTime.setText(UnitsFormatter.getFormattedTime(item.dtTxt.split(" ")[1], false));
+            temperature.setText(isMetric ? String.format(Locale.getDefault(), mContext.getString(R.string.temp_in_celsius), String.valueOf(temp))
+                    : String.format(Locale.getDefault(), mContext.getString(R.string.temp_in_fahrenheit), String.valueOf(temp)));
+            wind.setText(isMetric ? item.wind.speed + " kph" : item.wind.speed + " mph");
             if (item.rain != null) {
-                rain.setText(item.rain.h3 + "%");
+                rain.setText(item.rain.h3 + " mm");
             } else {
-                rain.setText("0%");
+                rain.setText("0 mm");
             }
             humidity.setText(item.main.humidity + "%");
             Picasso.get().load(url).into(image);
@@ -152,7 +179,12 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
     }
 
     private String getFormattedDate(DateTime dateTime) {
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMM d, y", Locale.getDefault());
+        SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
         return formatter.format(dateTime.toDate());
+    }
+
+    private String convertToTempScale(String temp) {
+        int temperature = (int) Math.round(Double.parseDouble(temp) - 273.15);
+        return String.valueOf(temperature);
     }
 }
