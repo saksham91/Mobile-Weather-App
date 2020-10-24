@@ -17,7 +17,7 @@ public interface WeatherService {
     Call<WeatherData> getWeatherDataByZipCode(@Query("zip") String zipCode, @Query("appid") String appId);
 
     @GET("data/2.5/forecast?")
-    Call<FiveDayData> getWeatherForecastByZipCode(@Query("zip") String zipCode, @Query("appid") String appId);
+    Call<FiveDayData> getWeatherForecastByZipCode(@Query("zip") String zipCode, @Query("appid") String appId, @Query("units") String units);
 
     @GET("data/2.5/weather?")
     Call<WeatherData> getWeatherDataCurrentLocation(@Query("lat") String lat, @Query("lon") String lon, @Query("appid") String appId);

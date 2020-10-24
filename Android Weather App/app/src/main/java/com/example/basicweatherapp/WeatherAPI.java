@@ -80,10 +80,10 @@ public class WeatherAPI {
         return currentWeatherData;
     }
 
-    public FiveDayData getFiveDaysForecast(final Context context, String zipCode) {
+    public FiveDayData getFiveDaysForecast(final Context context, String zipCode, String units) {
         if (mRetrofit == null) { initRetrofit(); }
         WeatherService weatherService = mRetrofit.create(WeatherService.class);
-        Call<FiveDayData> call = weatherService.getWeatherForecastByZipCode(zipCode, appId);
+        Call<FiveDayData> call = weatherService.getWeatherForecastByZipCode(zipCode, appId, units);
         call.enqueue(new Callback<FiveDayData>() {
             @Override
             public void onResponse(Call<FiveDayData> call, Response<FiveDayData> response) {
@@ -124,6 +124,11 @@ public class WeatherAPI {
         currentWeatherData.put("humidity", tempData.humidity);
         currentWeatherData.put("windSpeed", windData.speed);
         currentWeatherData.put("icon", icon);
+    }
+
+
+    public FiveDayData getFiveDayData() {
+        return fiveDayData;
     }
 
     public String getCityName() {
@@ -185,11 +190,4 @@ public class WeatherAPI {
             listener.onResponseSuccess();
         }
     }
-
-    private void handleWeatherData(ArrayList<ForecastData> dataList) {
-        for (ForecastData data : dataList) {
-
-        }
-    }
-
 }

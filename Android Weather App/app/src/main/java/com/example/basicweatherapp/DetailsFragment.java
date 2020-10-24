@@ -22,6 +22,7 @@ import com.example.basicweatherapp.models.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,9 +37,8 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
     private View mFragmentView;
     private ExpandableListView mExpandableListView;
     private ForecastDataAdapter mForecastDataAdapter;
-    private ArrayList<List> finalList = new ArrayList<>();
     private boolean isMetric = true;
-    private java.util.List candidateTimes = Arrays.asList("03:00:00", "09:00:00", "15:00:00", "21:00:00");
+    private String cityZipCode = "02128";
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -54,8 +54,11 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
         super.onCreate(savedInstanceState);
         weatherAPI = WeatherAPI.getInstance();
         weatherAPI.subscribeToWeatherResponseData(this);
-        mSharedPrefs = getActivity().getSharedPreferences(SettingsFragment.PREFERENCE_FILE, Context.MODE_PRIVATE);
+        mSharedPrefs = Objects.requireNonNull(getActivity()).getSharedPreferences(SettingsFragment.PREFERENCE_FILE, Context.MODE_PRIVATE);
         mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
+        isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
+        cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
+        callAPI(cityZipCode, getUnits());
     }
 
     @Override
@@ -69,17 +72,16 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
     @Override
     public void onResume() {
         super.onResume();
-        isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
-        String cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
-        callAPI(cityZipCode);
+        configureViews();
     }
 
-    private void callAPI(String zipCode) {
-        fiveDayData = weatherAPI.getFiveDaysForecast(getContext(), zipCode);
+    private void callAPI(String zipCode, String units) {
+        fiveDayData = weatherAPI.getFiveDaysForecast(getContext(), zipCode, units);
     }
 
     private void configureViews() {
         mExpandableListView = mFragmentView.findViewById(R.id.forecast_list);
+
         if (fiveDayData != null && weatherAPI != null) {
             TextView cityNameHeader = mFragmentView.findViewById(R.id.cityNameHeader);
             cityNameHeader.setText(weatherAPI.getCityName());
@@ -94,16 +96,21 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (s.equals(getString(R.string.city_zip_code_key))) {
-            String zipCode = sharedPreferences.getString(s, "02128");
-            callAPI(zipCode);
+            cityZipCode = sharedPreferences.getString(s, "02128");
+            callAPI(cityZipCode, getUnits());
         } else if (s.equals(getString(R.string.unit_preference_key))) {
             isMetric = sharedPreferences.getBoolean(s, false);
-            configureViews();
+            callAPI(cityZipCode, getUnits());
         }
+    }
+
+    private String getUnits() {
+        return isMetric ? "metric" : "imperial";
     }
 
     @Override
     public void onResponseSuccess() {
+        fiveDayData = weatherAPI.getFiveDayData();
         configureViews();
     }
 

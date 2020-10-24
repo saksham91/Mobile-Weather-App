@@ -27,6 +27,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static com.example.basicweatherapp.MainActivity.kphToMph;
 
@@ -49,17 +50,12 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         weatherAPI = WeatherAPI.getInstance();
         weatherAPI.subscribeToWeatherResponseData(this);
-        mSharedPrefs = getActivity().getSharedPreferences(SettingsFragment.PREFERENCE_FILE, Context.MODE_PRIVATE);
+        mSharedPrefs = Objects.requireNonNull(getActivity()).getSharedPreferences(SettingsFragment.PREFERENCE_FILE, Context.MODE_PRIVATE);
         mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
         isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
         String cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
