@@ -106,26 +106,37 @@ public class ForecastDataAdapter extends BaseExpandableListAdapter {
             view = layoutInflater.inflate(R.layout.forecast_expanded_data, null);
         }
 
-        if (groupPosition > 0) {
-            hideLabels(view);
+        if (childPosition > 0) {
+            hideLabels(view, true);
+        } else {
+            hideLabels(view, false);
         }
         fillChildWithView(view, item);
         return view;
     }
 
-    private void hideLabels(View view) {
+    private void hideLabels(View view, boolean shouldHide) {
         TextView tv1 = view.findViewById(R.id.forecast_data_time_label);
         TextView tv2 = view.findViewById(R.id.temp_label);
         TextView tv3 = view.findViewById(R.id.wind_label);
         TextView tv4 = view.findViewById(R.id.rain_label);
         TextView tv5 = view.findViewById(R.id.humidity_label);
         TextView tv6 = view.findViewById(R.id.weather_icon_label);
-        tv1.setVisibility(View.GONE);
-        tv2.setVisibility(View.GONE);
-        tv3.setVisibility(View.GONE);
-        tv4.setVisibility(View.GONE);
-        tv5.setVisibility(View.GONE);
-        tv6.setVisibility(View.GONE);
+        if (shouldHide) {
+            tv1.setVisibility(View.GONE);
+            tv2.setVisibility(View.GONE);
+            tv3.setVisibility(View.GONE);
+            tv4.setVisibility(View.GONE);
+            tv5.setVisibility(View.GONE);
+            tv6.setVisibility(View.GONE);
+        } else {
+            tv1.setVisibility(View.VISIBLE);
+            tv2.setVisibility(View.VISIBLE);
+            tv3.setVisibility(View.VISIBLE);
+            tv4.setVisibility(View.VISIBLE);
+            tv5.setVisibility(View.VISIBLE);
+            tv6.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
