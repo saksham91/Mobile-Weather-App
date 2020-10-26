@@ -1,6 +1,8 @@
 package com.example.basicweatherapp;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -9,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +21,22 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+
+import java.util.Arrays;
+import java.util.Objects;
+
+import static android.app.Activity.RESULT_OK;
 
 public class SettingsFragment extends Fragment {
 
@@ -47,6 +66,9 @@ public class SettingsFragment extends Fragment {
         if (getActivity() != null) {
             mSharedPrefs = getActivity().getSharedPreferences(PREFERENCE_FILE, Context.MODE_PRIVATE);
         }
+
+        Places.initialize(Objects.requireNonNull(getContext()), BuildConfig.placesApiKey);
+        PlacesClient placesClient = Places.createClient(getContext());
     }
 
     @Override
@@ -70,32 +92,33 @@ public class SettingsFragment extends Fragment {
         mChooseCityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.search_city, null);
-                final EditText editText = dialogView.findViewById(R.id.edit_text);
-                Button buttonOk = dialogView.findViewById(R.id.btn_ok);
-                Button buttonCancel = dialogView.findViewById(R.id.btn_cancel);
-
-                buttonCancel.setOnClickListener(v -> dialog.dismiss() );
-                buttonOk.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String cityName = editText.getText().toString();
-                        if (cityName.length() < 5) {
-                            Toast.makeText(getContext(), "Invalid City Zip Code", Toast.LENGTH_SHORT).show();
-                        } else {
-                            TextView cityTv = mFragmentView.findViewById(R.id.city_zip_code);
-                            cityTv.setText(cityName);
-                            SharedPreferences.Editor editor = mSharedPrefs.edit();
-                            editor.putString(getString(R.string.city_zip_code_key), cityName);
-                            editor.apply();
-                        }
-                        dialog.dismiss();
-                    }
-                });
-                dialog.setView(dialogView);
-                dialog.show();
+                startAutoCompleteActivity();
+//                final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
+//                LayoutInflater inflater = getLayoutInflater();
+//                View dialogView = inflater.inflate(R.layout.search_city, null);
+//                final EditText editText = dialogView.findViewById(R.id.edit_text);
+//                Button buttonOk = dialogView.findViewById(R.id.btn_ok);
+//                Button buttonCancel = dialogView.findViewById(R.id.btn_cancel);
+//
+//                buttonCancel.setOnClickListener(v -> dialog.dismiss() );
+//                buttonOk.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        String cityName = editText.getText().toString();
+//                        if (cityName.length() < 5) {
+//                            Toast.makeText(getContext(), "Invalid City Zip Code", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            TextView cityTv = mFragmentView.findViewById(R.id.city_zip_code);
+//                            cityTv.setText(cityName);
+//                            SharedPreferences.Editor editor = mSharedPrefs.edit();
+//                            editor.putString(getString(R.string.city_zip_code_key), cityName);
+//                            editor.apply();
+//                        }
+//                        dialog.dismiss();
+//                    }
+//                });
+//                dialog.setView(dialogView);
+//                dialog.show();
             }
         });
 
@@ -126,6 +149,28 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 2) {
+            if (resultCode == AutocompleteActivity.RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.d("SupportFragment", "onActivityResult: " + place.getName() + " : " + place.getLatLng().latitude);
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.d("SupportFragment", "onActivityResult: " + status.getStatusMessage());
+            } else if (resultCode == AutocompleteActivity.RESULT_CANCELED) {
+
+            }
+        }
+    }
+
+    public void startAutoCompleteActivity() {
+        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG))
+                .setTypeFilter(TypeFilter.CITIES)
+                .build(getContext());
+        startActivityForResult(intent, 2);
     }
 
     private boolean isMetric() {
