@@ -54,8 +54,9 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
         mSharedPrefs = Objects.requireNonNull(getActivity()).getSharedPreferences(SettingsFragment.PREFERENCE_FILE, Context.MODE_PRIVATE);
         mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
         isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
-        String cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
-        callAPI(cityZipCode);
+        String latitude = mSharedPrefs.getString(getString(R.string.city_latitude_key), "40.7128");
+        String longitude = mSharedPrefs.getString(getString(R.string.city_longitude_key), "74.0060");
+        callAPILatLng(latitude, longitude);
     }
 
     @Override
@@ -81,8 +82,8 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
         weatherView.setVisibility(View.GONE);
     }
 
-    private void callAPI(String zipCode) {
-        data = weatherAPI.getWeatherData(getContext(), zipCode);
+    private void callAPILatLng(final String lat, final String lon) {
+        data = weatherAPI.getWeatherData(getContext(), lat, lon);
     }
 
     @SuppressLint("SetTextI18n")
@@ -102,7 +103,7 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
 
         String icon = data.get("icon");
         weatherView.setVisibility(View.VISIBLE);
-        cityName.setText(data.get("cityName"));
+        cityName.setText(UnitsFormatter.extractCityName(data.get("cityName")));
         weatherCondition.setText(capitalizeFirstAlphabet(data.get("condition")));
         humidity.setText(data.get("humidity") + " %");
 
@@ -138,9 +139,10 @@ public class HomeFragment extends Fragment implements WeatherResponseListener, S
             configureViews();
         } else if (s.equals(getString(R.string.time_preference_key))) {
 
-        } else if (s.equals(getString(R.string.city_zip_code_key))) {
-            String zipCode = sharedPreferences.getString(s, "02128");
-            callAPI(zipCode);
+        } else if (s.equals(getString(R.string.city_latitude_key)) || s.equals(getString(R.string.city_longitude_key))) {
+            String lat = sharedPreferences.getString(getString(R.string.city_latitude_key), "");
+            String lon = sharedPreferences.getString(getString(R.string.city_longitude_key), "");
+            callAPILatLng(lat, lon);
         }
     }
 

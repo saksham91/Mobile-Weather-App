@@ -57,10 +57,10 @@ public class WeatherAPI {
         return mWeatherAPI;
     }
 
-    public Map<String, String> getWeatherData(final Context context, String zip) {
+    public Map<String, String> getWeatherData(final Context context, String lat, String lon) {
         if (mRetrofit == null) { initRetrofit(); }
         WeatherService weatherService = mRetrofit.create(WeatherService.class);
-        Call<WeatherData> call = weatherService.getWeatherDataByZipCode(zip, appId);
+        Call<WeatherData> call = weatherService.getWeatherDataCurrentLocation(lat, lon, appId);
         call.enqueue(new Callback<WeatherData>() {
 
             @Override
@@ -81,10 +81,10 @@ public class WeatherAPI {
         return currentWeatherData;
     }
 
-    public FiveDayData getFiveDaysForecast(final Context context, String zipCode, String units) {
+    public FiveDayData getFiveDaysForecast(final Context context, String lat, String lon, String units) {
         if (mRetrofit == null) { initRetrofit(); }
         WeatherService weatherService = mRetrofit.create(WeatherService.class);
-        Call<FiveDayData> call = weatherService.getWeatherForecastByZipCode(zipCode, appId, units);
+        Call<FiveDayData> call = weatherService.getWeatherForecastCurrentLocation(lat, lon, appId, units);
         call.enqueue(new Callback<FiveDayData>() {
             @Override
             public void onResponse(Call<FiveDayData> call, Response<FiveDayData> response) {
@@ -173,7 +173,7 @@ public class WeatherAPI {
                 }
             }
 
-            if (tempList.size() >= 3) {
+            if (tempList.size() >= 1) {
                 timeBasedWeather.put(dayName, tempList);
             }
         }

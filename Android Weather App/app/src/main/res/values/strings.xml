@@ -13,4 +13,6 @@
     <string name="unit_preference_key">is_metric</string>
     <string name="time_preference_key">prefer_twelve_hour</string>
     <string name="city_zip_code_key">city_zip_code</string>
+    <string name="city_latitude_key">city_latitude</string>
+    <string name="city_longitude_key">city_longitude</string>
 </resources>

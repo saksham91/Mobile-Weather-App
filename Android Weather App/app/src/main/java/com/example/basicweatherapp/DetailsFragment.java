@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.basicweatherapp.adapters.ForecastDataAdapter;
 import com.example.basicweatherapp.models.FiveDayData;
 import com.example.basicweatherapp.models.List;
+import com.example.basicweatherapp.util.UnitsFormatter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,8 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
     private ExpandableListView mExpandableListView;
     private ForecastDataAdapter mForecastDataAdapter;
     private boolean isMetric = true;
-    private String cityZipCode = "02128";
+    private String latitude;
+    private String longitude;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -57,8 +59,9 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
         mSharedPrefs = Objects.requireNonNull(getActivity()).getSharedPreferences(SettingsFragment.PREFERENCE_FILE, Context.MODE_PRIVATE);
         mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
         isMetric = mSharedPrefs.getBoolean(getString(R.string.unit_preference_key), true);
-        cityZipCode = mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128");
-        callAPI(cityZipCode, getUnits());
+        latitude = mSharedPrefs.getString(getString(R.string.city_latitude_key), "40.7128");
+        longitude = mSharedPrefs.getString(getString(R.string.city_longitude_key), "74.0060");
+        callAPILatLng(latitude, longitude, getUnits());
     }
 
     @Override
@@ -75,8 +78,8 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
         configureViews();
     }
 
-    private void callAPI(String zipCode, String units) {
-        fiveDayData = weatherAPI.getFiveDaysForecast(getContext(), zipCode, units);
+    private void callAPILatLng(final String lat, final String lon, final String units) {
+        fiveDayData = weatherAPI.getFiveDaysForecast(getContext(), lat, lon, units);
     }
 
     private void configureViews() {
@@ -84,7 +87,7 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
 
         if (fiveDayData != null && weatherAPI != null) {
             TextView cityNameHeader = mFragmentView.findViewById(R.id.cityNameHeader);
-            cityNameHeader.setText(weatherAPI.getCityName());
+            cityNameHeader.setText(UnitsFormatter.extractCityName(weatherAPI.getCityName()));
             java.util.List<String> dayNames = weatherAPI.filterForecastDays();
             Map<String, java.util.List<List>> timeBasedWeatherData = weatherAPI.getTimeBasedWeatherInfo();
             mForecastDataAdapter = new ForecastDataAdapter(getContext(), dayNames, timeBasedWeatherData, isMetric);
@@ -95,12 +98,13 @@ public class DetailsFragment extends Fragment implements WeatherResponseListener
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        if (s.equals(getString(R.string.city_zip_code_key))) {
-            cityZipCode = sharedPreferences.getString(s, "02128");
-            callAPI(cityZipCode, getUnits());
-        } else if (s.equals(getString(R.string.unit_preference_key))) {
+        if (s.equals(getString(R.string.unit_preference_key))) {
             isMetric = sharedPreferences.getBoolean(s, false);
-            callAPI(cityZipCode, getUnits());
+            callAPILatLng(latitude, longitude, getUnits());
+        } else if (s.equals(getString(R.string.city_latitude_key)) || s.equals(getString(R.string.city_longitude_key))) {
+            latitude = sharedPreferences.getString(getString(R.string.city_latitude_key), "");
+            longitude = sharedPreferences.getString(getString(R.string.city_longitude_key), "");
+            callAPILatLng(latitude, longitude, getUnits());
         }
     }
 

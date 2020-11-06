@@ -30,7 +30,7 @@
             android:layout_height="60dp"
             android:background="@color/colorAccent"
             android:layout_alignParentEnd="true"
-            android:text="Select Zip Code"
+            android:text="Select City"
             android:fontFamily="sans-serif-condensed-medium"
             android:textSize="14sp"
             android:textColor="@color/white"

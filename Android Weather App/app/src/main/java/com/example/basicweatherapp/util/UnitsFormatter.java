@@ -30,4 +30,10 @@ public class UnitsFormatter {
     public static String convertToImperialTemp(int metricValue) {
         return String.valueOf(Math.round(metricValue * 1.8 + 32));
     }
+
+    public static String extractCityName(final String fullName) {
+        String[] name = fullName.split(", ");
+        if (name.length > 1) return name[1];
+        return fullName;
+    }
 }

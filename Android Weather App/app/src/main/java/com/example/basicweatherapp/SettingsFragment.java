@@ -89,38 +89,7 @@ public class SettingsFragment extends Fragment {
         mChooseCityButton = mFragmentView.findViewById(R.id.choose_city_btn);
         setUpCheckedButtonState();
 
-        mChooseCityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startAutoCompleteActivity();
-//                final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
-//                LayoutInflater inflater = getLayoutInflater();
-//                View dialogView = inflater.inflate(R.layout.search_city, null);
-//                final EditText editText = dialogView.findViewById(R.id.edit_text);
-//                Button buttonOk = dialogView.findViewById(R.id.btn_ok);
-//                Button buttonCancel = dialogView.findViewById(R.id.btn_cancel);
-//
-//                buttonCancel.setOnClickListener(v -> dialog.dismiss() );
-//                buttonOk.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        String cityName = editText.getText().toString();
-//                        if (cityName.length() < 5) {
-//                            Toast.makeText(getContext(), "Invalid City Zip Code", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            TextView cityTv = mFragmentView.findViewById(R.id.city_zip_code);
-//                            cityTv.setText(cityName);
-//                            SharedPreferences.Editor editor = mSharedPrefs.edit();
-//                            editor.putString(getString(R.string.city_zip_code_key), cityName);
-//                            editor.apply();
-//                        }
-//                        dialog.dismiss();
-//                    }
-//                });
-//                dialog.setView(dialogView);
-//                dialog.show();
-            }
-        });
+        mChooseCityButton.setOnClickListener(v -> startAutoCompleteActivity());
 
         mRadioGroupUnit.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -156,10 +125,15 @@ public class SettingsFragment extends Fragment {
         if (requestCode == 2) {
             if (resultCode == AutocompleteActivity.RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.d("SupportFragment", "onActivityResult: " + place.getName() + " : " + place.getLatLng().latitude);
+                TextView cityTv = mFragmentView.findViewById(R.id.city_zip_code);
+                cityTv.setText(place.getName());
+                SharedPreferences.Editor editor = mSharedPrefs.edit();
+                editor.putString(getString(R.string.city_name), place.getName());
+                editor.putString(getString(R.string.city_latitude_key), String.valueOf(Objects.requireNonNull(place.getLatLng()).latitude));
+                editor.putString(getString(R.string.city_longitude_key), String.valueOf(place.getLatLng().longitude));
+                editor.apply();
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 Status status = Autocomplete.getStatusFromIntent(data);
-                Log.d("SupportFragment", "onActivityResult: " + status.getStatusMessage());
             } else if (resultCode == AutocompleteActivity.RESULT_CANCELED) {
 
             }
@@ -183,7 +157,7 @@ public class SettingsFragment extends Fragment {
 
     private void setUpCheckedButtonState() {
         TextView cityTv = mFragmentView.findViewById(R.id.city_zip_code);
-        cityTv.setText(mSharedPrefs.getString(getString(R.string.city_zip_code_key), "02128"));
+        cityTv.setText(mSharedPrefs.getString(getString(R.string.city_name), ""));
         if (isMetric()) {
             mRadioGroupUnit.check(R.id.metric);
         } else {
